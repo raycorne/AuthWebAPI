@@ -1,4 +1,4 @@
-﻿namespace AuthWebAPI.Models
+﻿namespace AuthWebAPI.Core.Models
 {
     public class RegisterUserDTO
     {

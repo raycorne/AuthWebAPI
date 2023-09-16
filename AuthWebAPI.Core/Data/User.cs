@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
-namespace AuthWebAPI.Data
+namespace AuthWebAPI.Core.Data
 {
     public class User : IdentityUser
     {
