@@ -2,9 +2,9 @@
 
 #nullable disable
 
-namespace AuthWebAPI.Migrations
+namespace MobileAppWebAPI.Migrations
 {
-    public partial class testpcmig : Migration
+    public partial class test_after_restruct_1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

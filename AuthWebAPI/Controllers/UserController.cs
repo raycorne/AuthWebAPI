@@ -8,15 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-/*{
-    "firstName": "Nenetrate",
-  "lastName": "Piggers",
-  "password": "Or@l_cumsh0t",
-  "email": "niger@mail.ru",
-  "address": "grave"
-}*/
-
-namespace AuthWebAPI.Controllers
+namespace MobileAppWebAPI.Controllers
 {
 	[Route("api/[controller]")]
 	[Authorize]

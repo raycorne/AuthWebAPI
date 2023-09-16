@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace AuthWebAPI.Context
+namespace MobileAppWebAPI.Context
 {
 	public partial class MobileAppDBContext : IdentityDbContext<User>
 	{
