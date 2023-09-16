@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MobileAppWebAPI.Context;
 
@@ -11,9 +12,10 @@ using MobileAppWebAPI.Context;
 namespace MobileAppWebAPI.Migrations
 {
     [DbContext(typeof(MobileAppDBContext))]
-    partial class MobileAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230916120054_adding_furniture_table_2")]
+    partial class adding_furniture_table_2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

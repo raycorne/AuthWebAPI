@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MobileAppWebAPI.Context;
+using MobileAppWebAPI.Services.Furnitures;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,8 @@ builder.Services.AddAuthentication(f =>
 		ClockSkew = TimeSpan.Zero
 	};
 });
+
+builder.Services.AddScoped<IFurnitureRepository, FurnitureRepository>();
 
 //Add Authentication in Swagger
 builder.Services.AddSwaggerGen(swagger =>

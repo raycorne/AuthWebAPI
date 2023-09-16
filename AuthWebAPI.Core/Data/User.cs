@@ -10,5 +10,6 @@ namespace AuthWebAPI.Core.Data
         [MaxLength(50)]
         public string LastName { get; set; } = null!;
         public string? Address { get; set; }
+        public string? RefreshToken { get; set; }
     }
 }

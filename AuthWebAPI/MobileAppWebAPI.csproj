@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AuthWebAPI.Core\AuthWebAPI.Core.csproj" />
+    <ProjectReference Include="..\FurnitureRepo.Core\FurnitureRepo.Core.csproj" />
   </ItemGroup>
 
 </Project>

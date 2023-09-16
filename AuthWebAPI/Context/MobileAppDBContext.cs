@@ -1,4 +1,5 @@
 ﻿using AuthWebAPI.Core.Data;
+using FurnitureRepo.Core.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,8 @@ namespace MobileAppWebAPI.Context
 			: base(options)
 		{
 		}
+
+		public DbSet<Furniture> Furnitures { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
