@@ -14,7 +14,7 @@ namespace MobileAppWebAPI.Controllers
         }
 
         [HttpPost("AddFile")]
-        public async Task<IActionResult> AddFile()
+        public async Task<IActionResult> AddFile(IFormFile[] formFiles)
         {
             try
             {

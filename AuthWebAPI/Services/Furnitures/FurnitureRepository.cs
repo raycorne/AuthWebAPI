@@ -20,14 +20,14 @@ namespace MobileAppWebAPI.Services.Furnitures
 			var response = new RepositoryMainResponse();
 			try
 			{
-				await _context.AddAsync(new Furniture
+				await _context.Furnitures.AddAsync(new Furniture
 				{
 					Name = furnitureDTO.Name,
 					Description = furnitureDTO.Description,
 					CategoryId = furnitureDTO.CategoryId,
 					Price = furnitureDTO.Price,
 					IsActive = furnitureDTO.IsActive,
-					Image = furnitureDTO.Image
+					Images = furnitureDTO.Images
 				});
 
 				await _context.SaveChangesAsync();
@@ -56,7 +56,7 @@ namespace MobileAppWebAPI.Services.Furnitures
 					exictingFurniture.CategoryId = furniture.CategoryId;
 					exictingFurniture.Price = furniture.Price;
 					exictingFurniture.IsActive = furniture.IsActive;
-					exictingFurniture.Image = furniture.Image;
+					exictingFurniture.Images = furniture.Images;
 
 					await _context.SaveChangesAsync();
 
@@ -136,6 +136,8 @@ namespace MobileAppWebAPI.Services.Furnitures
 			}
 			return response;
 		}
+
+		
 
 		//public async Task<List<Furniture>> GetAll() =>
 		//	await _db.Furnitures.ToListAsync();

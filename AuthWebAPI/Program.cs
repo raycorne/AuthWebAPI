@@ -41,6 +41,7 @@ builder.Services.AddAuthentication(f =>
 });
 
 builder.Services.AddScoped<IFurnitureRepository, FurnitureRepository>();
+builder.Services.AddScoped<IFurnitureImagesRepository, FurnitureImagesRepository>();
 
 //Add Authentication in Swagger
 builder.Services.AddSwaggerGen(swagger =>
