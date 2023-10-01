@@ -9,9 +9,10 @@ namespace FurnitureRepo.Core.Data
 		public string Name { get; set; } = null!;
 		public string? Description { get; set; }
 		[MaxLength(50)]
-		public string Type { get; set; } = null!;
-		public int Cost { get; set; }
+		public FurnitureCategory Category { get; set; } = null!;
+		public int CategoryId { get; set; }
+		public int Price { get; set; }
 		public bool IsActive { get; set; } = false;
-		public string? ImgUrl { get; set; }
+		public string? Image { get; set; }
 	}
 }

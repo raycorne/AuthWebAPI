@@ -14,7 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<MobileAppDBContext>(options =>
 {
-	options.UseSqlServer(builder.Configuration.GetConnectionString("MobileAppCon"));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("MobileAppCon") ??
+		throw new InvalidOperationException("Database connection string is not found"));
 });
 
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<MobileAppDBContext>();

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MobileAppWebAPI.Context;
 
@@ -11,9 +12,10 @@ using MobileAppWebAPI.Context;
 namespace MobileAppWebAPI.Migrations
 {
     [DbContext(typeof(MobileAppDBContext))]
-    partial class MobileAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20230924172015_mg-1")]
+    partial class mg1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -292,7 +294,7 @@ namespace MobileAppWebAPI.Migrations
             modelBuilder.Entity("FurnitureRepo.Core.Data.Furniture", b =>
                 {
                     b.HasOne("FurnitureRepo.Core.Data.FurnitureCategory", "Category")
-                        .WithMany("Furnitures")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -349,11 +351,6 @@ namespace MobileAppWebAPI.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("FurnitureRepo.Core.Data.FurnitureCategory", b =>
-                {
-                    b.Navigation("Furnitures");
                 });
 #pragma warning restore 612, 618
         }

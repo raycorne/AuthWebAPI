@@ -13,6 +13,7 @@ namespace MobileAppWebAPI.Context
 		}
 
 		public DbSet<Furniture> Furnitures { get; set; }
+		public DbSet<FurnitureCategory> FurnitureCategories { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{

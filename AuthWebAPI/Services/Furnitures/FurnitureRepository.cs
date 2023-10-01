@@ -1,11 +1,12 @@
 ﻿using FurnitureRepo.Core.Data;
 using FurnitureRepo.Core.Models;
+using FurnitureRepo.Core.Responses;
 using Microsoft.EntityFrameworkCore;
 using MobileAppWebAPI.Context;
 
 namespace MobileAppWebAPI.Services.Furnitures
 {
-	public class FurnitureRepository : IFurnitureRepository
+    public class FurnitureRepository : IFurnitureRepository
 	{
 		private readonly MobileAppDBContext _context;
 
@@ -14,19 +15,19 @@ namespace MobileAppWebAPI.Services.Furnitures
 			_context = context;
 		}
 
-		public async Task<MainResponse> AddFurniture(FurnitureDTO furnitureDTO)
+		public async Task<RepositoryMainResponse> AddFurniture(FurnitureDTO furnitureDTO)
 		{
-			var response = new MainResponse();
+			var response = new RepositoryMainResponse();
 			try
 			{
 				await _context.AddAsync(new Furniture
 				{
 					Name = furnitureDTO.Name,
 					Description = furnitureDTO.Description,
-					Type = furnitureDTO.Type,
-					Cost = furnitureDTO.Cost,
+					CategoryId = furnitureDTO.CategoryId,
+					Price = furnitureDTO.Price,
 					IsActive = furnitureDTO.IsActive,
-					ImgUrl = furnitureDTO.ImgUrl
+					Image = furnitureDTO.Image
 				});
 
 				await _context.SaveChangesAsync();
@@ -42,9 +43,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<MainResponse> UpdateFurniture(FurnitureDTO furniture)
+		public async Task<RepositoryMainResponse> UpdateFurniture(FurnitureDTO furniture)
 		{
-			var response = new MainResponse();
+			var response = new RepositoryMainResponse();
 			try
 			{
 				var exictingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id).FirstOrDefault();
@@ -52,10 +53,10 @@ namespace MobileAppWebAPI.Services.Furnitures
 				{
 					exictingFurniture.Name = furniture.Name;
 					exictingFurniture.Description = furniture.Description;
-					exictingFurniture.Type = furniture.Type;
-					exictingFurniture.Cost = furniture.Cost;
+					exictingFurniture.CategoryId = furniture.CategoryId;
+					exictingFurniture.Price = furniture.Price;
 					exictingFurniture.IsActive = furniture.IsActive;
-					exictingFurniture.ImgUrl = furniture.ImgUrl;
+					exictingFurniture.Image = furniture.Image;
 
 					await _context.SaveChangesAsync();
 
@@ -76,9 +77,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<MainResponse> DeleteFurniture(DeleteFurnitureDTO forniture)
+		public async Task<RepositoryMainResponse> DeleteFurniture(DeleteFurnitureDTO forniture)
 		{
-			var response = new MainResponse();
+			var response = new RepositoryMainResponse();
 			try
 			{
 				var exictingFurniture = _context.Furnitures.Where(x => x.Id == forniture.Id).FirstOrDefault();
@@ -104,9 +105,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<MainResponse> GetAllFurnitures()
+		public async Task<RepositoryMainResponse> GetAllFurnitures()
 		{
-			var response = new MainResponse();
+			var response = new RepositoryMainResponse();
 			try
 			{
 				response.Content = await _context.Furnitures.ToListAsync();
@@ -120,9 +121,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<MainResponse> GetFurnitureById(Guid id)
+		public async Task<RepositoryMainResponse> GetFurnitureById(Guid id)
 		{
-			var response = new MainResponse();
+			var response = new RepositoryMainResponse();
 			try
 			{
 				response.Content = await _context.Furnitures.Where(f => f.Id == id).FirstOrDefaultAsync();

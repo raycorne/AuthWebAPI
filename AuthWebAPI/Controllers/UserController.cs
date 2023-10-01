@@ -75,34 +75,28 @@ namespace MobileAppWebAPI.Controllers
         public async Task<IActionResult> AuthenticateUser(AuthenticateUser authenticateUser)
         {
             var user = await _userManager.FindByNameAsync(authenticateUser.UserName);
-            if (user == null)
-                return Unauthorized();
+            if (user == null) return Unauthorized();
 
             bool isValidUser = await _userManager.CheckPasswordAsync(user, authenticateUser.Password);
+
             if (isValidUser)
             {
-                var tokenHandler = new JwtSecurityTokenHandler();
+                string accessToken = GenerateAccessToken(user);
+                var refreshToken = GenerateRefreshToken();
+                user.RefreshToken = refreshToken;
+                await _userManager.UpdateAsync(user);
 
-                var keyDetail = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
-
-                var claims = new List<Claim>
+                var response = new AuthMainResponse
                 {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+                    Content = new AuthenticationResponse
+                    {
+                        RefreshToken = refreshToken,
+                        AccessToken = accessToken
+                    },
+                    IsSuccess = true,
+                    ErrorMessage = ""
                 };
-
-                var tokenDescriptor = new SecurityTokenDescriptor
-                {
-                    Issuer = _configuration["JWT:Issuer"],
-                    Audience = _configuration["JWT:Audience"],
-                    Expires = DateTime.UtcNow.AddMonths(1),
-                    Subject = new ClaimsIdentity(claims),
-                    SigningCredentials = new SigningCredentials(
-                        new SymmetricSecurityKey(keyDetail), SecurityAlgorithms.HmacSha256Signature)
-                };
-
-                var token = tokenHandler.CreateToken(tokenDescriptor);
-                return Ok(tokenHandler.WriteToken(token));
+                return Ok(response);
             }
             else
             {
@@ -244,7 +238,7 @@ namespace MobileAppWebAPI.Controllers
             {
                 Audience = _configuration["JWT:Audience"],
                 Issuer = _configuration["JWT:Issuer"],
-                Expires = DateTime.UtcNow.AddMinutes(30),
+                Expires = DateTime.UtcNow.AddMinutes(1),
                 Subject = new ClaimsIdentity(claims),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyDetail), SecurityAlgorithms.HmacSha256Signature)
             };
