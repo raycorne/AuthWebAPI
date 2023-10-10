@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ImagesUploadFolder\**" />
+    <Content Remove="ImagesUploadFolder\**" />
+    <EmbeddedResource Remove="ImagesUploadFolder\**" />
+    <None Remove="ImagesUploadFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.22" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.22" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.22" />
@@ -19,12 +26,18 @@
 
   <ItemGroup>
     <Folder Include="Context\" />
-    <Folder Include="ImagesUploadFolder\" />
+    <Folder Include="Images\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AuthWebAPI.Core\AuthWebAPI.Core.csproj" />
     <ProjectReference Include="..\FurnitureRepo.Core\FurnitureRepo.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Images\браво-2.jpg">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

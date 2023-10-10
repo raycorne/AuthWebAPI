@@ -1,9 +1,8 @@
 ﻿using FurnitureRepo.Core.Data;
 using FurnitureRepo.Core.Models;
-using FurnitureRepo.Core.Requests;
 using FurnitureRepo.Core.Responses;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using MobileAppWebAPI.Services.FurnitureImages;
 using MobileAppWebAPI.Services.Furnitures;
 
 namespace MobileAppWebAPI.Controllers
@@ -26,16 +25,15 @@ namespace MobileAppWebAPI.Controllers
         }
 
         [HttpPost("AddFurniture")]
-        public async Task<IActionResult> AddFurniture([FromForm] FurnitureUploadRequest furnitureUploadRequest)
+        public async Task<IActionResult> AddFurniture([FromBody] AddFurnitureDTO addFurnitureDTO)
         {
             try
             {
-                var uploadResponse = await UploadImagesToServer(furnitureUploadRequest.Files);
+                var uploadResponse = await UploadImagesToServer(addFurnitureDTO.Images!);
                 //var uploadResponse = new UploadImagesResponse { IsSuccess = false, ErrorMessage = "Non active"};
-                List<string> images = new List<string>();
-                if(uploadResponse.IsSuccess ==  true)
+                List<FurnitureImage> furnitureImages = new List<FurnitureImage>();
+                if (uploadResponse.IsSuccess == true)
                 {
-                    List<FurnitureImage> furnitureImages = new List<FurnitureImage>();
                     foreach (var path in uploadResponse.ImagesPaths!)
                     {
                         furnitureImages.Add(new FurnitureImage
@@ -44,10 +42,19 @@ namespace MobileAppWebAPI.Controllers
                             Uri = path
                         });
                     }
-                    //var imageResponse = await _furnitureImagesRepository.UploadImages(furnitureImages);
-                    furnitureUploadRequest.FurnitureDTO.Images = furnitureImages;
                 }
-                var response = await _furnitureRepository.AddFurniture(furnitureUploadRequest.FurnitureDTO);
+
+                var furnitureDTO = new FurnitureDTO
+                {
+                    Name = addFurnitureDTO.Name,
+                    Description = addFurnitureDTO.Description,
+                    CategoryId = addFurnitureDTO.CategoryId,
+                    Price = addFurnitureDTO.Price,
+                    IsActive = addFurnitureDTO.IsActive,
+                    Images = furnitureImages
+                };
+
+                var response = await _furnitureRepository.AddFurniture(furnitureDTO);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -56,52 +63,51 @@ namespace MobileAppWebAPI.Controllers
             }
         }
 
-        private async Task<UploadImagesResponse> UploadImagesToServer(IFormFile[] files)
+        private async Task<UploadImagesResponse> UploadImagesToServer(List<AddImageDTO> images)
         {
             var response = new UploadImagesResponse();
             try
             {
-                var httpContent = HttpContext.Request;
+                List<string> imagesPaths = new();
 
-                if (httpContent == null)
+                foreach (var image in images)
                 {
-                    response.ErrorMessage = "Content = null";
-                    response.IsSuccess = false;
-                    return response;
-                }
-                if (httpContent.Form.Files.Count > 0)
-                {
-                    List<string> imagesPaths = new List<string>();
-                    foreach (var file in httpContent.Form.Files)
+                    if (!string.IsNullOrWhiteSpace(image.Bytes))
                     {
-                        var filePath = Path.Combine(_webHostEnvironment.ContentRootPath, "ImagesUploadFolder");
-
-                        if (!Directory.Exists(filePath))
+                        byte[] imgBytes = Convert.FromBase64String(image.Bytes);
+                        string fileName = $"{image.FileName}";
+                        if (!Directory.Exists("Images"))
                         {
-                            Directory.CreateDirectory(filePath);
+                            Directory.CreateDirectory("Images");
                         }
 
-                        using (var memoryStream = new MemoryStream())
+                        string uploadsFolder = Path.Combine("Images", fileName);
+                        Stream stream = new MemoryStream(imgBytes);
+                        using (var ms = new FileStream(uploadsFolder, FileMode.Create))
                         {
-                            await file.CopyToAsync(memoryStream);
-                            await System.IO.File.WriteAllBytesAsync(Path.Combine(filePath, file.FileName), memoryStream.ToArray());
+                            await stream.CopyToAsync(ms);
                         }
-                        imagesPaths.Add(Path.Combine(filePath, file.FileName));
+                        imagesPaths.Add(uploadsFolder);
                     }
+                }
+
+                if (imagesPaths.Count > 0)
+                {
                     response.IsSuccess = true;
                     response.ImagesPaths = imagesPaths;
-                    return response;
                 }
-                response.IsSuccess = false;
-                response.ErrorMessage = "No file selected";
-                return response;
+                else
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "No file selected";
+                }
             }
             catch (Exception ex)
             {
                 response.ErrorMessage = ex.Message;
                 response.IsSuccess = false;
-                return response;
             }
+            return response;
         }
 
         [HttpPut("UpdateFurniture")]
@@ -152,6 +158,31 @@ namespace MobileAppWebAPI.Controllers
             try
             {
                 var response = await _furnitureRepository.GetFurnitureById(FurnitureId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetImagesByUrl")]
+        public async Task<IActionResult> GetImagesByUrl(List<string> Uris)
+        {
+            try
+            {
+                //var returnResponse = await _furnitureImagesRepository.GetImagesByUrl(Uri);
+                ImageGetResponse response = new();
+                foreach (var uri in Uris)
+                {
+                    
+                    if (System.IO.File.Exists(uri))
+                    {
+                        byte[] bytes = System.IO.File.ReadAllBytes(uri);   // You can use your own method over here.         
+                        response.ImagesBytes!.Add(bytes);
+                    }
+                }
+
                 return Ok(response);
             }
             catch (Exception ex)

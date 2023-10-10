@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MobileAppWebAPI.Context;
 
@@ -11,9 +12,10 @@ using MobileAppWebAPI.Context;
 namespace MobileAppWebAPI.Migrations
 {
     [DbContext(typeof(MobileAppDBContext))]
-    partial class MobileAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20231009164250_image-table-2")]
+    partial class imagetable2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,7 +161,7 @@ namespace MobileAppWebAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("FurnitureId")
+                    b.Property<Guid?>("FurnitureId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Uri")
@@ -319,13 +321,9 @@ namespace MobileAppWebAPI.Migrations
 
             modelBuilder.Entity("FurnitureRepo.Core.Data.FurnitureImage", b =>
                 {
-                    b.HasOne("FurnitureRepo.Core.Data.Furniture", "Furniture")
+                    b.HasOne("FurnitureRepo.Core.Data.Furniture", null)
                         .WithMany("Images")
-                        .HasForeignKey("FurnitureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Furniture");
+                        .HasForeignKey("FurnitureId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

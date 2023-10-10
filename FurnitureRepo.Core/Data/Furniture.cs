@@ -4,6 +4,7 @@ namespace FurnitureRepo.Core.Data
 {
 	public class Furniture
 	{
+		[Key]
 		public Guid Id { get; set; }
 		[MaxLength(100)]
 		public string Name { get; set; } = null!;
@@ -13,6 +14,8 @@ namespace FurnitureRepo.Core.Data
 		public int CategoryId { get; set; }
 		public int Price { get; set; }
 		public bool IsActive { get; set; } = false;
+
+		//Navigation
 		public List<FurnitureImage>? Images { get; set; }
 	}
 }

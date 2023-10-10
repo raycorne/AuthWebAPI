@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AuthWebAPI.Core.Models;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 
 namespace MobileAppWebAPI.Controllers
 {
@@ -49,6 +51,48 @@ namespace MobileAppWebAPI.Controllers
             {
                 return new StatusCodeResult(500);
             }
+        }
+
+        [HttpPost("AddFileByPath")]
+        public async Task<IActionResult> AddFileByPath([FromBody] string? path)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    return BadRequest();
+                }
+
+                if (!string.IsNullOrWhiteSpace(path))
+                {
+                    byte[] imgBytes = Convert.FromBase64String(path);
+                    string fileName = $"TestFile.jpeg";
+                    string image = await UploadFile(imgBytes, fileName);
+                    return Ok("Image was added");
+                    //userToBeCreated.UserAvatar = avatar;
+                }
+                else
+                {
+                    return BadRequest("No image selected");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        private async Task<string> UploadFile(byte[] bytes, string fileName)
+        {
+            string uploadsFolder = Path.Combine("Images", fileName);
+            Stream stream = new MemoryStream(bytes);
+            using (var ms = new FileStream(uploadsFolder, FileMode.Create))
+            {
+                await stream.CopyToAsync(ms);
+            }
+            return uploadsFolder;
+
         }
     }
 }

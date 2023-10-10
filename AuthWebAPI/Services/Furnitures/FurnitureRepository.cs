@@ -105,12 +105,31 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<RepositoryMainResponse> GetAllFurnitures()
+		public async Task<RepositoryGetResponse> GetAllFurnitures()
 		{
-			var response = new RepositoryMainResponse();
+			var response = new RepositoryGetResponse();
+			List<FurnitureDTO> furnituresDTO = new();
 			try
 			{
-				response.Content = await _context.Furnitures.ToListAsync();
+				var furnitures = await _context.Furnitures.
+					Include(furniture => furniture.Images).
+					ToListAsync();
+
+				foreach(var furniture in furnitures)
+				{
+					furnituresDTO.Add(new FurnitureDTO
+					{
+						Id = furniture.Id,
+						Name = furniture.Name,
+						Description = furniture.Description,
+						CategoryId = furniture.CategoryId,
+						Price = furniture.Price,
+						IsActive = furniture.IsActive,
+						Images = furniture.Images,
+					});
+				}
+
+				response.Furnitures = furnituresDTO;
 				response.IsSuccess = true;
 			}
 			catch (Exception ex)

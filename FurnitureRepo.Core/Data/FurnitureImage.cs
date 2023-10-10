@@ -7,5 +7,9 @@ namespace FurnitureRepo.Core.Data
         [Key]
         public Guid Id { get; set; }
         public string Uri { get; set; } = null!;
+
+        //Navigation Properties
+        public Guid FurnitureId { get; set; }
+        public Furniture Furniture { get; set; }
     }
 }

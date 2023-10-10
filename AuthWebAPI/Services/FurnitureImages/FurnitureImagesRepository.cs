@@ -1,8 +1,8 @@
-﻿using FurnitureRepo.Core.Data;
-using FurnitureRepo.Core.Responses;
+﻿using FurnitureRepo.Core.Responses;
+using Microsoft.EntityFrameworkCore;
 using MobileAppWebAPI.Context;
 
-namespace MobileAppWebAPI.Services.Furnitures
+namespace MobileAppWebAPI.Services.FurnitureImages
 {
     public class FurnitureImagesRepository : IFurnitureImagesRepository
     {
