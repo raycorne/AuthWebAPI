@@ -2,6 +2,7 @@ using AuthWebAPI.Core.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MobileAppWebAPI.Context;
@@ -20,7 +21,15 @@ builder.Services.AddDbContext<MobileAppDBContext>(options =>
 		throw new InvalidOperationException("Database connection string is not found"));
 });
 
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<MobileAppDBContext>();
+builder.Services.AddIdentity<User, IdentityRole>(
+	options =>
+	{
+		options.Password.RequiredLength = 8;
+		options.Password.RequireDigit = false;
+		options.Password.RequireLowercase = false;
+		options.Password.RequireUppercase = false;
+		options.Password.RequireNonAlphanumeric = false;
+	}).AddEntityFrameworkStores<MobileAppDBContext>();
 
 builder.Services.AddAuthentication(f =>
 {
@@ -91,6 +100,13 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+                Path.Combine(Directory.GetCurrentDirectory(), "Images")),
+    RequestPath = "/Images"
+});
 
 app.UseHttpsRedirection();
 
