@@ -81,7 +81,7 @@ namespace MobileAppWebAPI.Controllers
 
             if (isValidUser)
             {
-                string accessToken = GenerateAccessToken(user);
+                string accessToken = await GenerateAccessToken(user);
                 var refreshToken = GenerateRefreshToken();
                 user.RefreshToken = refreshToken;
                 await _userManager.UpdateAsync(user);
@@ -176,7 +176,7 @@ namespace MobileAppWebAPI.Controllers
                     response.IsSuccess = false;
                 }
 
-                string newAccessToken = GenerateAccessToken(user);
+                string newAccessToken = await GenerateAccessToken(user);
                 string refreshToken = GenerateRefreshToken();
 
                 user.RefreshToken = refreshToken;
@@ -221,18 +221,25 @@ namespace MobileAppWebAPI.Controllers
             return principal;
         }
 
-        private string GenerateAccessToken(User user)
+        private async Task<string> GenerateAccessToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var keyDetail = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
 
             var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, $"{user.FirstName} { user.LastName}"),
-                    new Claim(ClaimTypes.Email, user.Email),
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.Name, $"{user.FirstName} { user.LastName}"),
+                new Claim(ClaimTypes.Email, user.Email),
             };
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var claimsRoles = new List<Claim>();
+            foreach (var userRole in userRoles)
+                claimsRoles.Add(new Claim(ClaimTypes.Role, userRole));
+
+            claims.AddRange(claimsRoles);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
