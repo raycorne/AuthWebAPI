@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using MobileAppWebAPI.Services.FurnitureImages;
 using MobileAppWebAPI.Services.Furnitures;
 
+using System.Drawing.Imaging;
+using System.Drawing;
+
 namespace MobileAppWebAPI.Controllers
 {
     [Route("api/[controller]")]
@@ -81,13 +84,23 @@ namespace MobileAppWebAPI.Controllers
                         {
                             Directory.CreateDirectory("Images");
                         }
-
                         string uploadsFolder = Path.Combine("Images", fileName);
-                        Stream stream = new MemoryStream(imgBytes);
+
+                        var compressedImage = CompressImage(imgBytes);
+
+                        Stream stream = new MemoryStream(compressedImage);
                         using (var ms = new FileStream(uploadsFolder, FileMode.Create))
                         {
                             await stream.CopyToAsync(ms);
                         }
+
+                        /*Stream stream = new MemoryStream(imgBytes);
+                        using (var ms = new FileStream(uploadsFolder, FileMode.Create))
+                        {
+                            await stream.CopyToAsync(ms);
+                        }*/
+
+
                         imagesPaths.Add(uploadsFolder);
                     }
                 }
@@ -109,6 +122,41 @@ namespace MobileAppWebAPI.Controllers
                 response.IsSuccess = false;
             }
             return response;
+        }
+
+        private byte[] CompressImage(byte[] originalImageBytes)
+        {
+            using (MemoryStream originalStream = new MemoryStream(originalImageBytes))
+            using (Image image = Image.FromStream(originalStream))
+            using (MemoryStream compressedStream = new MemoryStream())
+            {
+                // Определите параметры сжатия
+                EncoderParameters encoderParameters = new EncoderParameters(1);
+                long compressionLevel = 50; // Уровень сжатия (0 - без сжатия, 100 - максимальное сжатие)
+                encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, compressionLevel);
+
+                // Получите кодек для JPEG-изображений
+                ImageCodecInfo jpegCodecInfo = GetEncoderInfo("image/jpeg");
+
+                // Сохраните сжатое изображение в MemoryStream
+                image.Save(compressedStream, jpegCodecInfo, encoderParameters);
+
+
+                return compressedStream.ToArray();
+            }
+        }
+
+        private ImageCodecInfo GetEncoderInfo(string mimeType)
+        {
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+            foreach (ImageCodecInfo codec in codecs)
+            {
+                if (codec.MimeType == mimeType)
+                {
+                    return codec;
+                }
+            }
+            return null;
         }
 
         [HttpPut("UpdateFurniture")]

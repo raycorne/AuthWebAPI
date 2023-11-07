@@ -79,12 +79,12 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<RepositoryMainResponse> DeleteFurniture(DeleteFurnitureDTO forniture)
+		public async Task<RepositoryMainResponse> DeleteFurniture(DeleteFurnitureDTO furniture)
 		{
 			var response = new RepositoryMainResponse();
 			try
 			{
-				var exictingFurniture = _context.Furnitures.Where(x => x.Id == forniture.Id).FirstOrDefault();
+				var exictingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id).FirstOrDefault();
 				if (exictingFurniture != null)
 				{
 					_context.Furnitures.Remove(exictingFurniture);
