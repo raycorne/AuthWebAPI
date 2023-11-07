@@ -27,6 +27,7 @@ namespace MobileAppWebAPI.Services.Furnitures
 					CategoryId = furnitureDTO.CategoryId,
 					Price = furnitureDTO.Price,
 					IsActive = furnitureDTO.IsActive,
+					Url = furnitureDTO.Url,
 					Images = furnitureDTO.Images
 				});
 
@@ -56,6 +57,7 @@ namespace MobileAppWebAPI.Services.Furnitures
 					exictingFurniture.CategoryId = furniture.CategoryId;
 					exictingFurniture.Price = furniture.Price;
 					exictingFurniture.IsActive = furniture.IsActive;
+					exictingFurniture.Url = furniture.Url;
 					exictingFurniture.Images = furniture.Images;
 
 					await _context.SaveChangesAsync();
@@ -105,9 +107,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<RepositoryGetResponse> GetAllFurnitures()
+		public async Task<RepositoryGetAllFurnitureResponse> GetAllFurnitures()
 		{
-			var response = new RepositoryGetResponse();
+			var response = new RepositoryGetAllFurnitureResponse();
 			List<FurnitureDTO> furnituresDTO = new();
 			try
 			{
@@ -125,6 +127,7 @@ namespace MobileAppWebAPI.Services.Furnitures
 						CategoryId = furniture.CategoryId,
 						Price = furniture.Price,
 						IsActive = furniture.IsActive,
+						Url = furniture.Url,
 						Images = furniture.Images,
 					});
 				}
@@ -140,13 +143,37 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<RepositoryMainResponse> GetFurnitureById(Guid id)
+		public async Task<RepositoryGetSingleFurnitureResponse> GetFurnitureById(Guid id)
 		{
-			var response = new RepositoryMainResponse();
+			var response = new RepositoryGetSingleFurnitureResponse();
 			try
 			{
-				response.Content = await _context.Furnitures.Where(f => f.Id == id).FirstOrDefaultAsync();
-				response.IsSuccess = true;
+				var furniture = await _context.Furnitures.
+					Where(f => f.Id == id).
+                    Include(furniture => furniture.Images).
+                    FirstOrDefaultAsync();
+
+                if (furniture != null)
+				{
+					var furnitureDTO = new FurnitureDTO
+					{
+						Id = furniture.Id,
+						Name = furniture.Name,
+						Description = furniture.Description,
+						CategoryId = furniture.CategoryId,
+						Price = furniture.Price,
+						IsActive = furniture.IsActive,
+						Url = furniture.Url,
+						Images = furniture.Images
+					};
+					response.Furniture = furnitureDTO;
+                    response.IsSuccess = true;
+                }
+				else
+				{
+					response.ErrorMessage = "Мебель не найдена";
+					response.IsSuccess = false;
+                }
 			}
 			catch (Exception ex)
 			{
@@ -156,12 +183,51 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		
+        public async Task<RepositoryGetSingleFurnitureResponse> GetFurnitureByUrl(string url)
+        {
+            var response = new RepositoryGetSingleFurnitureResponse();
+            try
+            {
+				var furniture = await _context.Furnitures.
+					Where(f => f.Url == url).
+					Include(furniture => furniture.Images).
+					FirstOrDefaultAsync();
 
-		//public async Task<List<Furniture>> GetAll() =>
-		//	await _db.Furnitures.ToListAsync();
+                if (furniture != null)
+                {
+                    var furnitureDTO = new FurnitureDTO
+                    {
+                        Id = furniture.Id,
+                        Name = furniture.Name,
+                        Description = furniture.Description,
+                        CategoryId = furniture.CategoryId,
+                        Price = furniture.Price,
+                        IsActive = furniture.IsActive,
+                        Url = furniture.Url,
+                        Images = furniture.Images
+                    };
+                    response.Furniture = furnitureDTO;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.ErrorMessage = "Мебель не найдена";
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
 
-		//public async Task<Furniture> GetByID(Guid Id) =>
-		//	await _db.Furnitures.Where(f => f.Id == Id).FirstOrDefaultAsync();
-	}
+
+        //public async Task<List<Furniture>> GetAll() =>
+        //	await _db.Furnitures.ToListAsync();
+
+        //public async Task<Furniture> GetByID(Guid Id) =>
+        //	await _db.Furnitures.Where(f => f.Id == Id).FirstOrDefaultAsync();
+    }
 }

@@ -14,6 +14,7 @@ namespace FurnitureRepo.Core.Data
 		public int CategoryId { get; set; }
 		public int Price { get; set; }
 		public bool IsActive { get; set; } = false;
+		public string Url { get; set; } = null!;
 
 		//Navigation
 		public List<FurnitureImage>? Images { get; set; }

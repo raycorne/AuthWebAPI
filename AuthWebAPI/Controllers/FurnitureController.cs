@@ -51,6 +51,7 @@ namespace MobileAppWebAPI.Controllers
                     CategoryId = addFurnitureDTO.CategoryId,
                     Price = addFurnitureDTO.Price,
                     IsActive = addFurnitureDTO.IsActive,
+                    Url = addFurnitureDTO.Url,
                     Images = furnitureImages
                 };
 
@@ -158,6 +159,20 @@ namespace MobileAppWebAPI.Controllers
             try
             {
                 var response = await _furnitureRepository.GetFurnitureById(FurnitureId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetFurnitureByUrl/{FurnitureUrl}")]
+        public async Task<IActionResult> GetFurnitureByUrl(string FurnitureUrl)
+        {
+            try
+            {
+                var response = await _furnitureRepository.GetFurnitureByUrl(FurnitureUrl);
                 return Ok(response);
             }
             catch (Exception ex)

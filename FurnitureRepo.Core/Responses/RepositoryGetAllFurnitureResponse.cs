@@ -3,7 +3,7 @@ using FurnitureRepo.Core.Models;
 
 namespace FurnitureRepo.Core.Responses
 {
-    public class RepositoryGetResponse
+    public class RepositoryGetAllFurnitureResponse
     {
         public bool IsSuccess { get; set; }
         public string? ErrorMessage { get; set; }
