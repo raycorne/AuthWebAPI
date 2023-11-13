@@ -1,4 +1,4 @@
-﻿using FurnitureRepo.Core.Models;
+﻿using FurnitureRepo.Core.Models.FurnitureModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

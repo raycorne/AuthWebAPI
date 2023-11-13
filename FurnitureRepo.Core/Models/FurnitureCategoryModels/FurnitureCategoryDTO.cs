@@ -1,6 +1,8 @@
-﻿namespace FurnitureRepo.Core.Data
+﻿using FurnitureRepo.Core.Data;
+
+namespace FurnitureRepo.Core.Models.FurnitureCategoryModels
 {
-    public class FurnitureCategory
+    public class FurnitureCategoryDTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

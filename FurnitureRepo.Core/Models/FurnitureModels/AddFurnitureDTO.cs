@@ -1,8 +1,6 @@
-﻿using FurnitureRepo.Core.Data;
-
-namespace FurnitureRepo.Core.Models
+﻿namespace FurnitureRepo.Core.Models.FurnitureModels
 {
-    public class FurnitureDTO
+    public class AddFurnitureDTO
     {
         public Guid? Id { get; set; }
         public string Name { get; set; } = null!;
@@ -11,6 +9,6 @@ namespace FurnitureRepo.Core.Models
         public int Price { get; set; }
         public bool IsActive { get; set; } = false;
         public string Url { get; set; } = null!;
-        public List<FurnitureImage>? Images { get; set; }
+        public List<AddImageDTO>? Images { get; set; }
     }
 }

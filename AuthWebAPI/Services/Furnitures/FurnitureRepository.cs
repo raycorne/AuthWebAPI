@@ -1,5 +1,6 @@
 ﻿using FurnitureRepo.Core.Data;
-using FurnitureRepo.Core.Models;
+using FurnitureRepo.Core.Models.FurnitureCategoryModels;
+using FurnitureRepo.Core.Models.FurnitureModels;
 using FurnitureRepo.Core.Responses;
 using Microsoft.EntityFrameworkCore;
 using MobileAppWebAPI.Context;
@@ -223,6 +224,7 @@ namespace MobileAppWebAPI.Services.Furnitures
             return response;
         }
 
+		
 
         //public async Task<List<Furniture>> GetAll() =>
         //	await _db.Furnitures.ToListAsync();

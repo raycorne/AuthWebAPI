@@ -7,6 +7,7 @@ using MobileAppWebAPI.Services.Furnitures;
 
 using System.Drawing.Imaging;
 using System.Drawing;
+using FurnitureRepo.Core.Models.FurnitureModels;
 
 namespace MobileAppWebAPI.Controllers
 {

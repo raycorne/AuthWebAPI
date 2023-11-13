@@ -1,4 +1,4 @@
-﻿using FurnitureRepo.Core.Models;
+﻿using FurnitureRepo.Core.Models.FurnitureModels;
 using FurnitureRepo.Core.Responses;
 
 namespace MobileAppWebAPI.Services.Furnitures

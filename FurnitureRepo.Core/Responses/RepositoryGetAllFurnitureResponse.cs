@@ -1,5 +1,4 @@
-﻿using FurnitureRepo.Core.Data;
-using FurnitureRepo.Core.Models;
+﻿using FurnitureRepo.Core.Models.FurnitureModels;
 
 namespace FurnitureRepo.Core.Responses
 {

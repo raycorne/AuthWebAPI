@@ -6,6 +6,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MobileAppWebAPI.Context;
+using MobileAppWebAPI.Services.FurnitureCategories;
 using MobileAppWebAPI.Services.FurnitureImages;
 using MobileAppWebAPI.Services.Furnitures;
 using System.Text;
@@ -53,6 +54,7 @@ builder.Services.AddAuthentication(f =>
 
 builder.Services.AddScoped<IFurnitureRepository, FurnitureRepository>();
 builder.Services.AddScoped<IFurnitureImagesRepository, FurnitureImagesRepository>();
+builder.Services.AddScoped<IFurnitureCategoryRepository, FurnitureCategoryRepository>();
 
 //Add Authentication in Swagger
 builder.Services.AddSwaggerGen(swagger =>

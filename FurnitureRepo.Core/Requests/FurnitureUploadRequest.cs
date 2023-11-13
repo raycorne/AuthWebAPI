@@ -1,4 +1,4 @@
-﻿using FurnitureRepo.Core.Models;
+﻿using FurnitureRepo.Core.Models.FurnitureModels;
 using Microsoft.AspNetCore.Http;
 
 namespace FurnitureRepo.Core.Requests
