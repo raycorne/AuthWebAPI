@@ -2,6 +2,7 @@
 using FurnitureRepo.Core.Models.FurnitureCategoryModels;
 using FurnitureRepo.Core.Models.FurnitureModels;
 using FurnitureRepo.Core.Responses;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobileAppWebAPI.Context;
 
@@ -108,9 +109,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<RepositoryGetAllFurnitureResponse> GetAllFurnitures()
+		public async Task<GetAllFurnitureResponse> GetAllFurnitures()
 		{
-			var response = new RepositoryGetAllFurnitureResponse();
+			var response = new GetAllFurnitureResponse();
 			List<FurnitureDTO> furnituresDTO = new();
 			try
 			{
@@ -144,9 +145,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-		public async Task<RepositoryGetSingleFurnitureResponse> GetFurnitureById(Guid id)
+		public async Task<GetSingleFurnitureResponse> GetFurnitureById(Guid id)
 		{
-			var response = new RepositoryGetSingleFurnitureResponse();
+			var response = new GetSingleFurnitureResponse();
 			try
 			{
 				var furniture = await _context.Furnitures.
@@ -184,9 +185,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-        public async Task<RepositoryGetSingleFurnitureResponse> GetFurnitureByUrl(string url)
+        public async Task<GetSingleFurnitureResponse> GetFurnitureByUrl(string url)
         {
-            var response = new RepositoryGetSingleFurnitureResponse();
+            var response = new GetSingleFurnitureResponse();
             try
             {
 				var furniture = await _context.Furnitures.
@@ -224,7 +225,42 @@ namespace MobileAppWebAPI.Services.Furnitures
             return response;
         }
 
-		
+        public async Task<GetAllFurnitureResponse> GetFurnituresInCategory(int categoryId)
+        {
+            var response = new GetAllFurnitureResponse();
+            List<FurnitureDTO> furnituresDTO = new();
+            try
+            {
+                var furnitures = await _context.Furnitures
+					.Where(f => f.CategoryId == categoryId)
+                    .Include(furniture => furniture.Images)
+                    .ToListAsync();
+
+                foreach (var furniture in furnitures)
+                {
+                    furnituresDTO.Add(new FurnitureDTO
+                    {
+                        Id = furniture.Id,
+                        Name = furniture.Name,
+                        Description = furniture.Description,
+                        CategoryId = furniture.CategoryId,
+                        Price = furniture.Price,
+                        IsActive = furniture.IsActive,
+                        Url = furniture.Url,
+                        Images = furniture.Images,
+                    });
+                }
+
+                response.Furnitures = furnituresDTO;
+                response.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
 
         //public async Task<List<Furniture>> GetAll() =>
         //	await _db.Furnitures.ToListAsync();

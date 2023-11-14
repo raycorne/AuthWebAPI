@@ -85,5 +85,19 @@ namespace MobileAppWebAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("GetCategoryByUrl/{Url}")]
+        public async Task<IActionResult> GetCategoryById(string Url)
+        {
+            try
+            {
+                var response = await _categoryRepository.GetFurnitureByUrl(Url);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

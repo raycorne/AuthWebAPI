@@ -150,6 +150,7 @@ namespace MobileAppWebAPI.Services.FurnitureCategories
                     .Where(c => c.Id == id).
                     FirstOrDefaultAsync();
 
+
                 if (category != null)
                 {
                     var categoryDTO = new FurnitureCategoryDTO
@@ -161,6 +162,44 @@ namespace MobileAppWebAPI.Services.FurnitureCategories
                         Url = category.Url
                     };
                     
+                    response.FurnitureCategory = categoryDTO;
+                    response.IsSuccess = true;
+                }
+                else
+                {
+                    response.ErrorMessage = "Мебель не найдена";
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
+
+        public async Task<GetSingleCategoryResponse> GetFurnitureByUrl(string url)
+        {
+            var response = new GetSingleCategoryResponse();
+            try
+            {
+                var category = await _context.FurnitureCategories
+                    .Where(c => c.Url == url).
+                    FirstOrDefaultAsync();
+
+
+                if (category != null)
+                {
+                    var categoryDTO = new FurnitureCategoryDTO
+                    {
+                        Id = category.Id,
+                        Name = category.Name,
+                        Image = category.Image,
+                        IsDisplayedInNavbar = category.IsDisplayedInNavbar,
+                        Url = category.Url
+                    };
+
                     response.FurnitureCategory = categoryDTO;
                     response.IsSuccess = true;
                 }

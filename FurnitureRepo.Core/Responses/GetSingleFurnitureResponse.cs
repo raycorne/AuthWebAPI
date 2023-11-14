@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FurnitureRepo.Core.Responses
 {
-    public class RepositoryGetSingleFurnitureResponse
+    public class GetSingleFurnitureResponse
     {
         public bool IsSuccess { get; set; }
         public string? ErrorMessage { get; set; }

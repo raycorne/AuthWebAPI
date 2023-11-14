@@ -10,5 +10,6 @@ namespace MobileAppWebAPI.Services.FurnitureCategories
         public Task<RepositoryMainResponse> UpdateCategry(FurnitureCategoryDTO categoryDTO);
         public Task<GetAllCategoriesResponse> GetAllCategories();
         public Task<GetSingleCategoryResponse> GetFurnitureById(int id);
+        public Task<GetSingleCategoryResponse> GetFurnitureByUrl(string url);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace FurnitureRepo.Core.Responses
 {
-    public class RepositoryGetAllFurnitureResponse
+    public class GetAllFurnitureResponse
     {
         public bool IsSuccess { get; set; }
         public string? ErrorMessage { get; set; }

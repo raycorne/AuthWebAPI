@@ -230,6 +230,20 @@ namespace MobileAppWebAPI.Controllers
             }
         }
 
+        [HttpGet("GetFurnituresInCategory/{CategoryId}")]
+        public async Task<IActionResult> GetFurnituresInCategory(int CategoryId)
+        {
+            try
+            {
+                var response = await _furnitureRepository.GetFurnituresInCategory(CategoryId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("GetImagesByUrl")]
         public async Task<IActionResult> GetImagesByUrl(List<string> Uris)
         {
