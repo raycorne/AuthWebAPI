@@ -10,7 +10,7 @@ namespace MobileAppWebAPI.Services.Furnitures
         public Task<RepositoryMainResponse> DeleteFurniture(DeleteFurnitureDTO furniture);
         public Task<GetAllFurnitureResponse> GetAllFurnitures();
         public Task<GetSingleFurnitureResponse> GetFurnitureById(Guid id);
-        public Task<GetSingleFurnitureResponse> GetFurnitureByUrl(string url);
+        public Task<GetSingleFurnitureResponse> GetFurnitureByUrl(int categoryId, string url);
         public Task<GetAllFurnitureResponse> GetFurnituresInCategory(int categoryId);
 
     }

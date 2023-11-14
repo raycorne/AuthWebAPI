@@ -216,12 +216,12 @@ namespace MobileAppWebAPI.Controllers
             }
         }
 
-        [HttpGet("GetFurnitureByUrl/{FurnitureUrl}")]
-        public async Task<IActionResult> GetFurnitureByUrl(string FurnitureUrl)
+        [HttpGet("GetFurnitureByUrl/{CategoryId}/{FurnitureUrl}")]
+        public async Task<IActionResult> GetFurnitureByUrl(int CategoryId, string FurnitureUrl)
         {
             try
             {
-                var response = await _furnitureRepository.GetFurnitureByUrl(FurnitureUrl);
+                var response = await _furnitureRepository.GetFurnitureByUrl(CategoryId, FurnitureUrl);
                 return Ok(response);
             }
             catch (Exception ex)

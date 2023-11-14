@@ -185,13 +185,13 @@ namespace MobileAppWebAPI.Services.Furnitures
 			return response;
 		}
 
-        public async Task<GetSingleFurnitureResponse> GetFurnitureByUrl(string url)
+        public async Task<GetSingleFurnitureResponse> GetFurnitureByUrl(int categoryId, string furnitureUrl)
         {
             var response = new GetSingleFurnitureResponse();
             try
             {
 				var furniture = await _context.Furnitures.
-					Where(f => f.Url == url).
+					Where(f => f.Url == furnitureUrl && f.CategoryId == categoryId).
 					Include(furniture => furniture.Images).
 					FirstOrDefaultAsync();
 
