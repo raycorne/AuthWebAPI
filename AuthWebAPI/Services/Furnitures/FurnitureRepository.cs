@@ -1,199 +1,202 @@
 ﻿using FurnitureRepo.Core.Data;
-using FurnitureRepo.Core.Models.FurnitureCategoryModels;
 using FurnitureRepo.Core.Models.FurnitureModels;
 using FurnitureRepo.Core.Responses;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MobileAppWebAPI.Context;
 
 namespace MobileAppWebAPI.Services.Furnitures
 {
     public class FurnitureRepository : IFurnitureRepository
-	{
-		private readonly MobileAppDBContext _context;
+    {
+        private readonly MobileAppDBContext _context;
 
-		public FurnitureRepository(MobileAppDBContext context)
-		{
-			_context = context;
-		}
+        public FurnitureRepository(MobileAppDBContext context)
+        {
+            _context = context;
+        }
 
-		public async Task<RepositoryMainResponse> AddFurniture(FurnitureDTO furnitureDTO)
-		{
-			var response = new RepositoryMainResponse();
-			try
-			{
-				await _context.Furnitures.AddAsync(new Furniture
-				{
-					Name = furnitureDTO.Name,
-					Description = furnitureDTO.Description,
-					CategoryId = furnitureDTO.CategoryId,
-					Price = furnitureDTO.Price,
-					IsActive = furnitureDTO.IsActive,
-					Url = furnitureDTO.Url,
-					Images = furnitureDTO.Images
-				});
+        public async Task<RepositoryMainResponse> AddFurniture(FurnitureDTO furnitureDTO)
+        {
+            var response = new RepositoryMainResponse();
+            try
+            {
+                await _context.Furnitures.AddAsync(new Furniture
+                {
+                    Id = furnitureDTO.Id,
+                    Name = furnitureDTO.Name,
+                    Description = furnitureDTO.Description,
+                    CategoryId = furnitureDTO.CategoryId,
+                    Price = furnitureDTO.Price,
+                    IsActive = furnitureDTO.IsActive,
+                    Url = furnitureDTO.Url,
+                    Images = furnitureDTO.Images
+                });
 
-				await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-				response.IsSuccess = true;
-				response.Content = "Furniture added";
-			}
-			catch (Exception ex)
-			{
-				response.ErrorMessage = ex.Message;
-				response.IsSuccess = false;
-			}
-			return response;
-		}
+                response.IsSuccess = true;
+                response.Content = "Furniture added";
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
 
-		public async Task<RepositoryMainResponse> UpdateFurniture(FurnitureDTO furniture)
-		{
-			var response = new RepositoryMainResponse();
-			try
-			{
-				var exictingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id).FirstOrDefault();
-				if (exictingFurniture != null)
-				{
-					exictingFurniture.Name = furniture.Name;
-					exictingFurniture.Description = furniture.Description;
-					exictingFurniture.CategoryId = furniture.CategoryId;
-					exictingFurniture.Price = furniture.Price;
-					exictingFurniture.IsActive = furniture.IsActive;
-					exictingFurniture.Url = furniture.Url;
-					exictingFurniture.Images = furniture.Images;
+        public async Task<RepositoryMainResponse> UpdateFurniture(FurnitureDTO furniture)
+        {
+            var response = new RepositoryMainResponse();
+            try
+            {
+                var exictingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id).FirstOrDefault();
+                if (exictingFurniture != null)
+                {
+                    exictingFurniture.Name = furniture.Name;
+                    exictingFurniture.Description = furniture.Description;
+                    exictingFurniture.CategoryId = furniture.CategoryId;
+                    exictingFurniture.Price = furniture.Price;
+                    exictingFurniture.IsActive = furniture.IsActive;
+                    exictingFurniture.Url = furniture.Url;
+                    exictingFurniture.Images = furniture.Images;
 
-					await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
 
-					response.IsSuccess = true;
-					response.Content = "Record Updated";
-				}
-				else
-				{
-					response.IsSuccess = false;
-					response.ErrorMessage = "Furniture wasn't found";
-				}
-			}
-			catch (Exception ex)
-			{
-				response.ErrorMessage = ex.Message;
-				response.IsSuccess = false;
-			}
-			return response;
-		}
+                    response.IsSuccess = true;
+                    response.Content = "Record Updated";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.ErrorMessage = "Furniture wasn't found";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
 
-		public async Task<RepositoryMainResponse> DeleteFurniture(DeleteFurnitureDTO furniture)
-		{
-			var response = new RepositoryMainResponse();
-			try
-			{
-				var exictingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id).FirstOrDefault();
-				if (exictingFurniture != null)
-				{
-					_context.Furnitures.Remove(exictingFurniture);
-					await _context.SaveChangesAsync();
+        public async Task<RepositoryMainResponse> DeleteFurniture(DeleteFurnitureDTO furniture)
+        {
+            var response = new RepositoryMainResponse();
+            try
+            {
+                var exictingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id).FirstOrDefault();
+                if (exictingFurniture != null)
+                {
+                    if (Directory.Exists($"Images/{exictingFurniture.Id}"))
+                        Directory.Delete($"Images/{exictingFurniture.Id}", true);
 
-					response.IsSuccess = true;
-					response.Content = "Furniture was deleted";
-				}
-				else
-				{
-					response.ErrorMessage = "This furniture ID wasn't founded";
-					response.IsSuccess = false;
-				}
-			}
-			catch (Exception ex)
-			{
-				response.ErrorMessage = ex.Message;
-				response.IsSuccess = false;
-			}
-			return response;
-		}
+                    _context.Furnitures.Remove(exictingFurniture);
+                    await _context.SaveChangesAsync();
 
-		public async Task<GetAllFurnitureResponse> GetAllFurnitures()
-		{
-			var response = new GetAllFurnitureResponse();
-			List<FurnitureDTO> furnituresDTO = new();
-			try
-			{
-				var furnitures = await _context.Furnitures.
-					Include(furniture => furniture.Images).
-					ToListAsync();
 
-				foreach(var furniture in furnitures)
-				{
-					furnituresDTO.Add(new FurnitureDTO
-					{
-						Id = furniture.Id,
-						Name = furniture.Name,
-						Description = furniture.Description,
-						CategoryId = furniture.CategoryId,
-						Price = furniture.Price,
-						IsActive = furniture.IsActive,
-						Url = furniture.Url,
-						Images = furniture.Images,
-					});
-				}
+                    response.IsSuccess = true;
+                    response.Content = "Furniture was deleted";
+                }
+                else
+                {
+                    response.ErrorMessage = "This furniture ID wasn't founded";
+                    response.IsSuccess = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
 
-				response.Furnitures = furnituresDTO;
-				response.IsSuccess = true;
-			}
-			catch (Exception ex)
-			{
-				response.ErrorMessage = ex.Message;
-				response.IsSuccess = false;
-			}
-			return response;
-		}
+        public async Task<GetAllFurnitureResponse> GetAllFurnitures()
+        {
+            var response = new GetAllFurnitureResponse();
+            List<FurnitureDTO> furnituresDTO = new();
+            try
+            {
+                var furnitures = await _context.Furnitures.
+                    Include(furniture => furniture.Images).
+                    ToListAsync();
 
-		public async Task<GetSingleFurnitureResponse> GetFurnitureById(Guid id)
-		{
-			var response = new GetSingleFurnitureResponse();
-			try
-			{
-				var furniture = await _context.Furnitures.
-					Where(f => f.Id == id).
+                foreach (var furniture in furnitures)
+                {
+                    furnituresDTO.Add(new FurnitureDTO
+                    {
+                        Id = furniture.Id,
+                        Name = furniture.Name,
+                        Description = furniture.Description,
+                        CategoryId = furniture.CategoryId,
+                        Price = furniture.Price,
+                        IsActive = furniture.IsActive,
+                        Url = furniture.Url,
+                        Images = furniture.Images,
+                    });
+                }
+
+                response.Furnitures = furnituresDTO;
+                response.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
+
+        public async Task<GetSingleFurnitureResponse> GetFurnitureById(Guid id)
+        {
+            var response = new GetSingleFurnitureResponse();
+            try
+            {
+                var furniture = await _context.Furnitures.
+                    Where(f => f.Id == id).
                     Include(furniture => furniture.Images).
                     FirstOrDefaultAsync();
 
                 if (furniture != null)
-				{
-					var furnitureDTO = new FurnitureDTO
-					{
-						Id = furniture.Id,
-						Name = furniture.Name,
-						Description = furniture.Description,
-						CategoryId = furniture.CategoryId,
-						Price = furniture.Price,
-						IsActive = furniture.IsActive,
-						Url = furniture.Url,
-						Images = furniture.Images
-					};
-					response.Furniture = furnitureDTO;
+                {
+                    var furnitureDTO = new FurnitureDTO
+                    {
+                        Id = furniture.Id,
+                        Name = furniture.Name,
+                        Description = furniture.Description,
+                        CategoryId = furniture.CategoryId,
+                        Price = furniture.Price,
+                        IsActive = furniture.IsActive,
+                        Url = furniture.Url,
+                        Images = furniture.Images
+                    };
+                    response.Furniture = furnitureDTO;
                     response.IsSuccess = true;
                 }
-				else
-				{
-					response.ErrorMessage = "Мебель не найдена";
-					response.IsSuccess = false;
+                else
+                {
+                    response.ErrorMessage = "Мебель не найдена";
+                    response.IsSuccess = false;
                 }
-			}
-			catch (Exception ex)
-			{
-				response.ErrorMessage = ex.Message;
-				response.IsSuccess = false;
-			}
-			return response;
-		}
+            }
+            catch (Exception ex)
+            {
+                response.ErrorMessage = ex.Message;
+                response.IsSuccess = false;
+            }
+            return response;
+        }
 
         public async Task<GetSingleFurnitureResponse> GetFurnitureByUrl(int categoryId, string furnitureUrl)
         {
             var response = new GetSingleFurnitureResponse();
             try
             {
-				var furniture = await _context.Furnitures.
-					Where(f => f.Url == furnitureUrl && f.CategoryId == categoryId).
-					Include(furniture => furniture.Images).
-					FirstOrDefaultAsync();
+                var furniture = await _context.Furnitures.
+                    Where(f => f.Url == furnitureUrl && f.CategoryId == categoryId).
+                    Include(furniture => furniture.Images).
+                    FirstOrDefaultAsync();
 
                 if (furniture != null)
                 {
@@ -232,7 +235,7 @@ namespace MobileAppWebAPI.Services.Furnitures
             try
             {
                 var furnitures = await _context.Furnitures
-					.Where(f => f.CategoryId == categoryId)
+                    .Where(f => f.CategoryId == categoryId)
                     .Include(furniture => furniture.Images)
                     .ToListAsync();
 

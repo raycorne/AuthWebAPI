@@ -33,23 +33,13 @@ namespace MobileAppWebAPI.Controllers
         {
             try
             {
-                var uploadResponse = await UploadImagesToServer(addFurnitureDTO.Images!);
-                //var uploadResponse = new UploadImagesResponse { IsSuccess = false, ErrorMessage = "Non active"};
-                List<FurnitureImage> furnitureImages = new List<FurnitureImage>();
-                if (uploadResponse.IsSuccess == true)
-                {
-                    foreach (var path in uploadResponse.ImagesPaths!)
-                    {
-                        furnitureImages.Add(new FurnitureImage
-                        {
-                            Id = Guid.NewGuid(),
-                            Uri = path
-                        });
-                    }
-                }
+                Guid furnitureId = Guid.NewGuid();
+
+                var furnitureImages = GetUploadedImages(furnitureId);
 
                 var furnitureDTO = new FurnitureDTO
                 {
+                    Id = furnitureId,
                     Name = addFurnitureDTO.Name,
                     Description = addFurnitureDTO.Description,
                     CategoryId = addFurnitureDTO.CategoryId,
@@ -68,96 +58,35 @@ namespace MobileAppWebAPI.Controllers
             }
         }
 
-        private async Task<UploadImagesResponse> UploadImagesToServer(List<AddImageDTO> images)
+        private List<FurnitureImage> GetUploadedImages(Guid furnitureId)
         {
-            var response = new UploadImagesResponse();
-            try
+            var images = new List<FurnitureImage>();
+
+            string tempPath = "Images/Unsorted";
+            string newDirectoryPath = $"Images/{furnitureId}";
+            if(!Directory.Exists(newDirectoryPath))
+                Directory.CreateDirectory(newDirectoryPath);
+
+            string[] files = Directory.GetFiles(tempPath);
+
+            if(files.Length > 0)
             {
-                List<string> imagesPaths = new();
-
-                foreach (var image in images)
+                foreach (var file in files)
                 {
-                    if (!string.IsNullOrWhiteSpace(image.Bytes))
+                    if (System.IO.File.Exists(file))
                     {
-                        byte[] imgBytes = Convert.FromBase64String(image.Bytes);
-                        string fileName = $"{image.FileName}";
-                        if (!Directory.Exists("Images"))
+                        string newFilePath = Path.Combine(newDirectoryPath, Path.GetFileName(file));
+                        System.IO.File.Move(file, newFilePath);
+                        images.Add(new FurnitureImage
                         {
-                            Directory.CreateDirectory("Images");
-                        }
-                        string uploadsFolder = Path.Combine("Images", fileName);
-
-                        var compressedImage = CompressImage(imgBytes);
-
-                        Stream stream = new MemoryStream(compressedImage);
-                        using (var ms = new FileStream(uploadsFolder, FileMode.Create))
-                        {
-                            await stream.CopyToAsync(ms);
-                        }
-
-                        /*Stream stream = new MemoryStream(imgBytes);
-                        using (var ms = new FileStream(uploadsFolder, FileMode.Create))
-                        {
-                            await stream.CopyToAsync(ms);
-                        }*/
-
-
-                        imagesPaths.Add(uploadsFolder);
+                            Id = Guid.NewGuid(),
+                            Uri = newFilePath
+                        });
                     }
                 }
-
-                if (imagesPaths.Count > 0)
-                {
-                    response.IsSuccess = true;
-                    response.ImagesPaths = imagesPaths;
-                }
-                else
-                {
-                    response.IsSuccess = false;
-                    response.ErrorMessage = "No file selected";
-                }
             }
-            catch (Exception ex)
-            {
-                response.ErrorMessage = ex.Message;
-                response.IsSuccess = false;
-            }
-            return response;
-        }
-
-        private byte[] CompressImage(byte[] originalImageBytes)
-        {
-            using (MemoryStream originalStream = new MemoryStream(originalImageBytes))
-            using (Image image = Image.FromStream(originalStream))
-            using (MemoryStream compressedStream = new MemoryStream())
-            {
-                // Определите параметры сжатия
-                EncoderParameters encoderParameters = new EncoderParameters(1);
-                long compressionLevel = 50; // Уровень сжатия (0 - без сжатия, 100 - максимальное сжатие)
-                encoderParameters.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, compressionLevel);
-
-                // Получите кодек для JPEG-изображений
-                ImageCodecInfo jpegCodecInfo = GetEncoderInfo("image/jpeg");
-
-                // Сохраните сжатое изображение в MemoryStream
-                image.Save(compressedStream, jpegCodecInfo, encoderParameters);
-
-
-                return compressedStream.ToArray();
-            }
-        }
-
-        private ImageCodecInfo GetEncoderInfo(string mimeType)
-        {
-            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
-            foreach (ImageCodecInfo codec in codecs)
-            {
-                if (codec.MimeType == mimeType)
-                {
-                    return codec;
-                }
-            }
-            return null;
+            
+            return images;
         }
 
         [HttpPut("UpdateFurniture")]
