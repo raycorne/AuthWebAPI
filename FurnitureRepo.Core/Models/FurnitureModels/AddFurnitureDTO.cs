@@ -9,6 +9,7 @@
         public int Price { get; set; }
         public bool IsActive { get; set; } = false;
         public string Url { get; set; } = null!;
+        public string? MainImagePath { get; set; }
         public List<AddImageDTO>? Images { get; set; }
     }
 }

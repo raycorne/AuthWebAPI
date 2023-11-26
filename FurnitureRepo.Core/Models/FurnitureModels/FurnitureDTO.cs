@@ -11,6 +11,7 @@ namespace FurnitureRepo.Core.Models.FurnitureModels
         public int Price { get; set; }
         public bool IsActive { get; set; } = false;
         public string Url { get; set; } = null!;
-        public List<FurnitureImage>? Images { get; set; }
+        public List<FurnitureImageDTO>? Images { get; set; }
+        public int FurnitureCollectionId { get; set; }
     }
 }

@@ -4,5 +4,6 @@
     {
         public string? Bytes { get; set; }
         public string? FileName { get; set; }
+
     }
 }

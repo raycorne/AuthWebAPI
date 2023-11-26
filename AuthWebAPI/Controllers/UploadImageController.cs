@@ -1,7 +1,7 @@
-﻿using FurnitureRepo.Core.Data;
-using FurnitureRepo.Core.Models;
+﻿using FurnitureRepo.Core.Models;
 using FurnitureRepo.Core.Responses;
 using Microsoft.AspNetCore.Mvc;
+using MobileAppWebAPI.Services.FurnitureImages;
 using System.Drawing;
 using System.Drawing.Imaging;
 
@@ -13,6 +13,13 @@ namespace MobileAppWebAPI.Controllers
     {
 
         private string _unsortedDirectory = "Images/Unsorted";
+        private readonly IFurnitureImageRepository _imageService;
+
+        public UploadImageController(
+            IFurnitureImageRepository imageService)
+        {
+            _imageService = imageService;
+        }
 
         [HttpPost("UploadImagesToServer")]
         public async Task<IActionResult> UploadImagesToServer(List<AddImageDTO> images)
@@ -107,13 +114,48 @@ namespace MobileAppWebAPI.Controllers
         {
             try
             {
-                string[] files = await Task.Run(() => Directory.GetFiles(_unsortedDirectory));
-                return Ok(files);
+                if (Directory.Exists("Images/Unsorted"))
+                {
+                    string[] files = await Task.Run(() => Directory.GetFiles(_unsortedDirectory));
+                    return Ok(files);
+                }
+                else
+                {
+                    return BadRequest("Папка не найдена");
+                }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("DeleteImageByPath")]
+        public async Task<IActionResult> DeleteImageByPath([FromBody] string Path)
+        {
+            try
+            {
+                await Task.Run(() => System.IO.File.Delete(Path));
+                return Ok(new RepositoryMainResponse { Content="Файл удален", IsSuccess=true});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new RepositoryMainResponse { ErrorMessage=ex.Message, IsSuccess = false });
+            }
+        }
+
+        [HttpDelete("DeleteImageById/{Id}")]
+        public async Task<IActionResult> DeleteImageById(Guid Id)
+        {
+            try
+            {
+                var response = await _imageService.DeleteImage(Id);
+                return Ok(new RepositoryMainResponse { Content = "Файл удален", IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new RepositoryMainResponse { ErrorMessage = ex.Message, IsSuccess = false });
             }
         }
     }

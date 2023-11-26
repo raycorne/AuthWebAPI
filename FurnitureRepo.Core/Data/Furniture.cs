@@ -18,5 +18,7 @@ namespace FurnitureRepo.Core.Data
 
 		//Navigation
 		public List<FurnitureImage>? Images { get; set; }
+
+
 	}
 }

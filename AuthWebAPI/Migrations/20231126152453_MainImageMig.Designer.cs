@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MobileAppWebAPI.Context;
 
@@ -11,9 +12,10 @@ using MobileAppWebAPI.Context;
 namespace MobileAppWebAPI.Migrations
 {
     [DbContext(typeof(MobileAppDBContext))]
-    partial class MobileAppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20231126152453_MainImageMig")]
+    partial class MainImageMig
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,7 +136,7 @@ namespace MobileAppWebAPI.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Furnitures", (string)null);
+                    b.ToTable("Furnitures");
                 });
 
             modelBuilder.Entity("FurnitureRepo.Core.Data.FurnitureCategory", b =>
@@ -161,7 +163,7 @@ namespace MobileAppWebAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FurnitureCategories", (string)null);
+                    b.ToTable("FurnitureCategories");
                 });
 
             modelBuilder.Entity("FurnitureRepo.Core.Data.FurnitureImage", b =>
@@ -184,7 +186,7 @@ namespace MobileAppWebAPI.Migrations
 
                     b.HasIndex("FurnitureId");
 
-                    b.ToTable("FurnitureImages", (string)null);
+                    b.ToTable("FurnitureImages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -1,5 +1,4 @@
-﻿using FurnitureRepo.Core.Data;
-using FurnitureRepo.Core.Models.FurnitureModels;
+﻿using FurnitureRepo.Core.Models.FurnitureModels;
 using FurnitureRepo.Core.Responses;
 using Microsoft.EntityFrameworkCore;
 using MobileAppWebAPI.Context;
@@ -10,7 +9,8 @@ namespace MobileAppWebAPI.Services.Furnitures
     {
         private readonly MobileAppDBContext _context;
 
-        public FurnitureRepository(MobileAppDBContext context)
+        public FurnitureRepository(
+            MobileAppDBContext context)
         {
             _context = context;
         }
@@ -20,17 +20,10 @@ namespace MobileAppWebAPI.Services.Furnitures
             var response = new RepositoryMainResponse();
             try
             {
-                await _context.Furnitures.AddAsync(new Furniture
-                {
-                    Id = furnitureDTO.Id,
-                    Name = furnitureDTO.Name,
-                    Description = furnitureDTO.Description,
-                    CategoryId = furnitureDTO.CategoryId,
-                    Price = furnitureDTO.Price,
-                    IsActive = furnitureDTO.IsActive,
-                    Url = furnitureDTO.Url,
-                    Images = furnitureDTO.Images
-                });
+
+                var furniture = FurnitureMapper.ToFurniture(furnitureDTO);
+
+                await _context.Furnitures.AddAsync(furniture);
 
                 await _context.SaveChangesAsync();
 
@@ -50,16 +43,36 @@ namespace MobileAppWebAPI.Services.Furnitures
             var response = new RepositoryMainResponse();
             try
             {
-                var exictingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id).FirstOrDefault();
-                if (exictingFurniture != null)
+                var existingFurniture = _context.Furnitures.Where(x => x.Id == furniture.Id)
+                    .Include(f => f.Images)
+                    .FirstOrDefault();
+                if (existingFurniture != null)
                 {
-                    exictingFurniture.Name = furniture.Name;
-                    exictingFurniture.Description = furniture.Description;
-                    exictingFurniture.CategoryId = furniture.CategoryId;
-                    exictingFurniture.Price = furniture.Price;
-                    exictingFurniture.IsActive = furniture.IsActive;
-                    exictingFurniture.Url = furniture.Url;
-                    exictingFurniture.Images = furniture.Images;
+                    existingFurniture.Name = furniture.Name;
+                    existingFurniture.Description = furniture.Description;
+                    existingFurniture.CategoryId = furniture.CategoryId;
+                    existingFurniture.Price = furniture.Price;
+                    existingFurniture.IsActive = furniture.IsActive;
+                    existingFurniture.Url = furniture.Url;
+
+                    var newFurnitureImages = FurnitureMapper.ToListFurnitureImage(furniture.Images!);
+
+
+                    if(newFurnitureImages.Count > 0) 
+                    {
+                        foreach (var newImage in newFurnitureImages)
+                        {
+                            var existingImage = existingFurniture.Images.Where(i => i.Id == newImage.Id).FirstOrDefault();
+                            if (existingImage == null)
+                            {
+                                newImage.FurnitureId = existingFurniture.Id;
+                                await _context.FurnitureImages.AddAsync(newImage);
+                            }
+                        }
+                        
+                    }
+
+                    _context.Furnitures.Update(existingFurniture);
 
                     await _context.SaveChangesAsync();
 
@@ -124,7 +137,9 @@ namespace MobileAppWebAPI.Services.Furnitures
 
                 foreach (var furniture in furnitures)
                 {
-                    furnituresDTO.Add(new FurnitureDTO
+                    var furnitureDTO = FurnitureMapper.ToFurnitureDTO(furniture);
+                    furnituresDTO.Add(furnitureDTO);
+                    /*furnituresDTO.Add(new FurnitureDTO
                     {
                         Id = furniture.Id,
                         Name = furniture.Name,
@@ -134,7 +149,7 @@ namespace MobileAppWebAPI.Services.Furnitures
                         IsActive = furniture.IsActive,
                         Url = furniture.Url,
                         Images = furniture.Images,
-                    });
+                    });*/
                 }
 
                 response.Furnitures = furnituresDTO;
@@ -160,7 +175,7 @@ namespace MobileAppWebAPI.Services.Furnitures
 
                 if (furniture != null)
                 {
-                    var furnitureDTO = new FurnitureDTO
+                    /*var furnitureDTO = new FurnitureDTO
                     {
                         Id = furniture.Id,
                         Name = furniture.Name,
@@ -170,7 +185,8 @@ namespace MobileAppWebAPI.Services.Furnitures
                         IsActive = furniture.IsActive,
                         Url = furniture.Url,
                         Images = furniture.Images
-                    };
+                    };*/
+                    var furnitureDTO = FurnitureMapper.ToFurnitureDTO(furniture);
                     response.Furniture = furnitureDTO;
                     response.IsSuccess = true;
                 }
@@ -200,7 +216,7 @@ namespace MobileAppWebAPI.Services.Furnitures
 
                 if (furniture != null)
                 {
-                    var furnitureDTO = new FurnitureDTO
+                    /*var furnitureDTO = new FurnitureDTO
                     {
                         Id = furniture.Id,
                         Name = furniture.Name,
@@ -210,7 +226,8 @@ namespace MobileAppWebAPI.Services.Furnitures
                         IsActive = furniture.IsActive,
                         Url = furniture.Url,
                         Images = furniture.Images
-                    };
+                    };*/
+                    var furnitureDTO = FurnitureMapper.ToFurnitureDTO(furniture);
                     response.Furniture = furnitureDTO;
                     response.IsSuccess = true;
                 }
@@ -241,7 +258,7 @@ namespace MobileAppWebAPI.Services.Furnitures
 
                 foreach (var furniture in furnitures)
                 {
-                    furnituresDTO.Add(new FurnitureDTO
+                    /*furnituresDTO.Add(new FurnitureDTO
                     {
                         Id = furniture.Id,
                         Name = furniture.Name,
@@ -251,7 +268,9 @@ namespace MobileAppWebAPI.Services.Furnitures
                         IsActive = furniture.IsActive,
                         Url = furniture.Url,
                         Images = furniture.Images,
-                    });
+                    });*/
+                    var furnitureDTO = FurnitureMapper.ToFurnitureDTO(furniture);
+                    furnituresDTO.Add(furnitureDTO);
                 }
 
                 response.Furnitures = furnituresDTO;
